@@ -1,5 +1,5 @@
-# angular_ast
+# angular_test
 
-Testing infrastructure for [AngularDart][gh_angular_dart].
+Testing infrastructure and runner for [AngularDart][gh_angular_dart].
 
 [gh_angular_dart]: https://github.com/dart-lang/angular2
