@@ -9,7 +9,7 @@ import 'package:angular2/src/core/application_ref.dart';
 import 'package:angular2/src/core/linker/app_view_utils.dart';
 import 'package:angular2/angular2.dart';
 import 'package:angular2/platform/browser_static.dart';
-import 'package:angular_testing/src/overrides.dart';
+import 'package:angular_test/src/overrides.dart';
 
 /// Returns a future that completes with a new instantiated component.
 ///

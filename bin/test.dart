@@ -6,7 +6,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:angular_testing/src/bin/logging.dart';
+import 'package:angular_test/src/bin/logging.dart';
 import 'package:args/args.dart';
 import 'package:path/path.dart' as p;
 
@@ -14,7 +14,7 @@ import 'package:path/path.dart' as p;
 ///
 /// Tests that require AoT code generation proxies through `pub serve`.
 main(List<String> args) async {
-  initLogging('angular_testing.bin.run');
+  initLogging('angular_test.bin.run');
 
   final parsedArgs = _argParser.parse(args);
   final pubspecFile = new File(p.join(parsedArgs['package'], 'pubspec.yaml'));

@@ -2,10 +2,10 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:angular_testing/src/overrides/exception_handler.dart';
+import 'package:angular_test/src/overrides/exception_handler.dart';
 import 'package:angular2/di.dart';
 
-export 'package:angular_testing/src/overrides/exception_handler.dart'
+export 'package:angular_test/src/overrides/exception_handler.dart'
     show NgCaughtException, RethrowExceptionHandler;
 
 /// All default application overrides used in the test infrastructure.

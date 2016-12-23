@@ -7,7 +7,7 @@
 import 'dart:html';
 
 import 'package:angular2/angular2.dart';
-import 'package:angular_testing/src/bootstrap.dart';
+import 'package:angular_test/src/bootstrap.dart';
 import 'package:test/test.dart';
 
 @AngularEntrypoint()
