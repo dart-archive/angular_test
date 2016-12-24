@@ -9,7 +9,6 @@ import 'package:angular2/src/core/application_ref.dart';
 import 'package:angular2/src/core/linker/app_view_utils.dart';
 import 'package:angular2/angular2.dart';
 import 'package:angular2/platform/browser_static.dart';
-import 'package:angular_test/src/overrides.dart';
 
 /// Returns a future that completes with a new instantiated component.
 ///
@@ -35,11 +34,15 @@ Future<ComponentRef> bootstrapForTest/*<E>*/(
   final platformRef = browserStaticPlatform();
   final appInjector = ReflectiveInjector.resolveAndCreate([
     BROWSER_APP_PROVIDERS,
-    allTestingOverrides,
     addProviders,
   ], platformRef.injector);
   appViewUtils ??= appInjector.get(AppViewUtils);
   final ApplicationRefImpl appRef = appInjector.get(ApplicationRef);
+  NgZoneError caughtError;
+  final NgZone ngZone = appInjector.get(NgZone);
+  final onErrorSub = ngZone.onError.listen((e) {
+    caughtError = e;
+  });
   return appRef.run(() {
     return _runAndLoadComponent(
       appRef,
@@ -47,7 +50,17 @@ Future<ComponentRef> bootstrapForTest/*<E>*/(
       hostElement,
       appInjector,
       beforeChangeDetection: beforeChangeDetection,
-    );
+    ).then((componentRef) async {
+      await ngZone.onStable.first;
+      onErrorSub.cancel();
+      if (caughtError != null) {
+        return new Future.error(
+          caughtError.error,
+          new StackTrace.fromString(caughtError.stackTrace.join('\n')),
+        );
+      }
+      return componentRef;
+    });
   });
 }
 

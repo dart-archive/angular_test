@@ -1,0 +1,6 @@
+# For compiled tests, make them report errors from source-mapped Dart code.
+js_trace: true
+
+# Define tags we expect for this test suite.
+tags:
+  aot:
