@@ -7,7 +7,8 @@ import 'package:angular_test/src/errors.dart';
 import 'package:angular_test/src/frontend/fixture.dart';
 import 'package:angular_test/src/frontend/stabilizer.dart';
 
-NgTestFixture _activeTest;
+/// Used to determine if there is an actively executing test.
+NgTestFixture activeTest;
 
 /// Returns a new [List] merging iterables [a] and [b].
 List/*<E>*/ _concat/*<E>*/(Iterable/*<E>*/ a, Iterable/*<E>*/ b) {
@@ -23,7 +24,7 @@ List/*<E>*/ _concat/*<E>*/(Iterable/*<E>*/ a, Iterable/*<E>*/ b) {
 /// ```dart
 /// tearDown(() => disposeAnyRunningTest());
 /// ```
-Future<Null> disposeAnyRunningTest() async => _activeTest?.dispose();
+Future<Null> disposeAnyRunningTest() async => activeTest?.dispose();
 
 /// An immutable builder for creating a pre-configured AngularDart application.
 ///
@@ -132,11 +133,10 @@ class NgTestBed<T> {
     // additional micro-task - we want this to fail fast without entering an
     // asynchronous event if another test is running.
     void _checkForActiveTest() {
-      if (_activeTest != null) {
+      if (activeTest != null) {
         throw new TestAlreadyRunningError();
       }
     }
-
     _checkForActiveTest();
     return new Future<NgTestFixture<T>>.sync(() {
       _checkForActiveTest();

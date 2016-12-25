@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 @Tags(const ['aot'])
-@TestOn('browser')
 import 'dart:html';
 
 import 'package:angular2/angular2.dart';

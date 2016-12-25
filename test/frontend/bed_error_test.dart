@@ -1,5 +1,4 @@
 @Tags(const ['aot'])
-@TestOn('browser')
 import 'dart:async';
 
 import 'package:angular2/angular2.dart';

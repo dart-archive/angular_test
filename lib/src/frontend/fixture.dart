@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'dart:html';
 import 'package:angular2/angular2.dart';
+import 'package:angular_test/src/frontend/bed.dart';
 import 'package:angular_test/src/frontend/stabilizer.dart';
 
 class NgTestFixture<T> {
@@ -28,6 +29,7 @@ class NgTestFixture<T> {
     await update();
     _rootComponentRef.destroy();
     _applicationRef.dispose();
+    activeTest = null;
   }
 
   /// Root element.

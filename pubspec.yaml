@@ -27,6 +27,7 @@ transformers:
   - angular2/transform/reflection_remover:
       $include:
           - test/frontend/bed_error_test.dart
+          - test/frontend/bed_lifecycle_test.dart
           - test/bootstrap_test.dart
 
   # Allow test to proxy-load files so we can run AoT tests w/ pub serve.
