@@ -1,4 +1,9 @@
+// Copyright (c) 2016, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 @Tags(const ['aot'])
+@TestOn('browser')
 import 'dart:html';
 
 import 'package:angular2/angular2.dart';
@@ -31,7 +36,8 @@ class AngularLifecycle {
     // destroying the test the document root has been cleared.
     final fixture = await new NgTestBed<AngularLifecycle>(
       host: testRoot,
-    ).create();
+    )
+        .create();
     expect(docRoot.text, isEmpty);
     await fixture.update(run: (c) => c.value = 'New value');
     expect(docRoot.text, 'New value');

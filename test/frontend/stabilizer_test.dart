@@ -1,3 +1,7 @@
+// Copyright (c) 2016, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'dart:async';
 
 import 'package:angular2/di.dart';
@@ -76,7 +80,7 @@ void main() {
     test('should forward an asynchrnous error in the far future', () async {
       expect(ngZoneStabilizer.stabilize(run: () async {
         for (var i = 0; i < 20; i++) {
-          await new Future((){});
+          await new Future(() {});
           await new Future.value();
         }
         throw new StateError('Test');
@@ -87,7 +91,7 @@ void main() {
       var asyncEventsCompleted = false;
       ngZone.run(() async {
         for (var i = 0; i < 20; i++) {
-          await new Future((){});
+          await new Future(() {});
           await new Future.value();
         }
         asyncEventsCompleted = true;
@@ -98,14 +102,18 @@ void main() {
     });
 
     test('should throw if stabilization never occurs', () async {
-      expect(ngZoneStabilizer.stabilize(run: () {
-        // Just enough asynchronous events to exceed the threshold; not 1:1.
-        Timer.run(() {
-          Timer.run(() {
-            Timer.run(() {});
-          });
-        });
-      }, threshold: 5), throwsA(const isInstanceOf<WillNeverStabilizeError>()));
+      expect(
+          ngZoneStabilizer.stabilize(
+              run: () {
+                // Just enough asynchronous events to exceed the threshold; not 1:1.
+                Timer.run(() {
+                  Timer.run(() {
+                    Timer.run(() {});
+                  });
+                });
+              },
+              threshold: 5),
+          throwsA(const isInstanceOf<WillNeverStabilizeError>()));
     });
   });
 }

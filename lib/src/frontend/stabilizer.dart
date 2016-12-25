@@ -1,3 +1,7 @@
+// Copyright (c) 2016, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'dart:async';
 
 import 'package:angular2/di.dart';
@@ -120,7 +124,7 @@ class NgZoneStabilizer extends NgTestStabilizer {
     // If we haven't supplied anything, at least run a simple function w/ task.
     // This gives enough "work" to do where we can catch an error or stability.
     scheduleMicrotask(() {
-      _ngZone.run(fn ?? () => scheduleMicrotask((){}));
+      _ngZone.runGuarded(fn ?? () => scheduleMicrotask(() {}));
     });
 
     // Stop executing as soon as either stability or an error occurs.
@@ -136,7 +140,7 @@ class NgZoneStabilizer extends NgTestStabilizer {
     ]);
 
     // Give a bit of time to catch up, we could still have an occur in future.
-    await new Future((){});
+    await new Future(() {});
 
     // Fail if we caught an error.
     if (caughtError != null) {
