@@ -29,6 +29,10 @@ void main() {
   test('should be able to catch errors that occur in `ngOnInit`', () {
     return CatchOnInitErrors._runTest();
   });
+
+  test('should be able to catch errors that occur in change detection', () {
+    return CatchInChangeDetection._runTest();
+  });
 }
 
 @Component(selector: 'test', template: '')
@@ -88,9 +92,9 @@ class CatchConstructorAsyncErrors {
 @Component(selector: 'test', template: '')
 class CatchOnInitErrors implements OnInit {
   static _runTest() async {
-    final fixture = await new NgTestBed<CatchOnInitErrors>().create();
+    final testBed = new NgTestBed<CatchOnInitErrors>();
     expect(
-      fixture.update(),
+      testBed.create(),
       throwsInAngular(isStateError),
     );
   }
@@ -98,5 +102,32 @@ class CatchOnInitErrors implements OnInit {
   @override
   void ngOnInit() {
     throw new StateError('Test');
+  }
+}
+
+@Component(
+  selector: 'test',
+  template: '<child [trueToError]="value"></child>',
+  directives: const [ChildChangeDetectionError],
+)
+class CatchInChangeDetection {
+  static _runTest() async {
+    final fixture = await new NgTestBed<CatchInChangeDetection>().create();
+    expect(
+      fixture.update(run: (c) => c.value = true),
+      throwsInAngular(isStateError),
+    );
+  }
+
+  bool value = false;
+}
+
+@Component(selector: 'child', template: '')
+class ChildChangeDetectionError {
+  @Input()
+  set trueToError(bool trueToError) {
+    if (trueToError) {
+      throw new StateError('Test');
+    }
   }
 }
