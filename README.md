@@ -39,3 +39,12 @@ class HelloWorldComponent {
   String name = 'World';
 }
 ```
+
+## Running
+
+Use `pub run angular_test` - it will automatically run `pub serve` to run code generation
+(transformers) and `pub run test` to run browser tests on anything tagged with `'aot'`.:
+
+```sh
+$ pub run angular_test
+```
