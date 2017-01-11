@@ -29,7 +29,7 @@ void main() {
     final testBed = new NgTestBed<HelloWorldComponent>();
     final textFixture = await testBed.create();
     expect(testFixture.text, 'Hello World');
-    await textFixture.update((c) => c.name = 'Universe');
+    await textFixture.update(run: (c) => c.name = 'Universe');
     expect(textFixture.text, 'Hello Universe');
   });
 }
