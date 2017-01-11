@@ -57,7 +57,7 @@ class NgTestFixture<T> {
   ///   c.value = 5;
   /// });
   /// expect(fixture.text, contains('5 little piggies'));
-  Future<Null> update({void run(T instance)}) {
+  Future<Null> update([void run(T instance)]) {
     return _testStabilizer.stabilize(run: () {
       if (run != null) {
         new Future<Null>.sync(() {
