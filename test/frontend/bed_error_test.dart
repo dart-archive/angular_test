@@ -44,7 +44,7 @@ class CatchSynchronousErrors {
   static _runTest() async {
     final fixture = await new NgTestBed<CatchSynchronousErrors>().create();
     expect(
-      fixture.update(run: (_) => throw new StateError('Test')),
+      fixture.update((_) => throw new StateError('Test')),
       throwsInAngular(isStateError),
     );
   }
@@ -55,7 +55,7 @@ class CatchAsynchronousErrors {
   static _runTest() async {
     final fixture = await new NgTestBed<CatchAsynchronousErrors>().create();
     expect(
-      fixture.update(run: (_) => new Future.error(new StateError('Test'))),
+      fixture.update((_) => new Future.error(new StateError('Test'))),
       throwsInAngular(isStateError),
     );
   }
@@ -118,7 +118,7 @@ class CatchInChangeDetection {
   static _runTest() async {
     final fixture = await new NgTestBed<CatchInChangeDetection>().create();
     expect(
-      fixture.update(run: (c) => c.value = true),
+      fixture.update((c) => c.value = true),
       throwsInAngular(isStateError),
     );
   }

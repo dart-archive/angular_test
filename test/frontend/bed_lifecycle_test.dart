@@ -39,7 +39,7 @@ class AngularLifecycle {
     )
         .create();
     expect(docRoot.text, isEmpty);
-    await fixture.update(run: (c) => c.value = 'New value');
+    await fixture.update((c) => c.value = 'New value');
     expect(docRoot.text, 'New value');
     await fixture.dispose();
     expect(docRoot.text, isEmpty);
