@@ -16,7 +16,7 @@ NgTestFixture activeTest;
 
 /// Returns a new [List] merging iterables [a] and [b].
 List/*<E>*/ _concat/*<E>*/(Iterable/*<E>*/ a, Iterable/*<E>*/ b) {
-  return new List<E>.from(a)..addAll(b);
+  return new List/*<E>*/.from(a)..addAll(b);
 }
 
 /// If any [NgTestFixture] is currently executing, calls `dispose` on it.
