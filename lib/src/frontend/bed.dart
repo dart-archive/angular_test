@@ -16,7 +16,7 @@ NgTestFixture activeTest;
 
 /// Returns a new [List] merging iterables [a] and [b].
 List/*<E>*/ _concat/*<E>*/(Iterable/*<E>*/ a, Iterable/*<E>*/ b) {
-  return new List/*<E>*/.from(a)..addAll(b);
+  return new List/*<E>*/ .from(a)..addAll(b);
 }
 
 /// If any [NgTestFixture] is currently executing, calls `dispose` on it.
@@ -29,6 +29,30 @@ List/*<E>*/ _concat/*<E>*/(Iterable/*<E>*/ a, Iterable/*<E>*/ b) {
 /// tearDown(() => disposeAnyRunningTest());
 /// ```
 Future<Null> disposeAnyRunningTest() async => activeTest?.dispose();
+
+/// An alternative method for [NgTestBed.create] that allows a dynamic [type].
+///
+/// This is for compatibility reasons only and should not be used otherwise.
+Future<NgTestFixture/*<T>*/ > createDynamicFixture/*<T>*/(
+  NgTestBed/*<T>*/ bed,
+  Type type, {
+  void beforeChangeDetection(T instance),
+}) {
+  return bed._createDynamic(type, beforeChangeDetection: beforeChangeDetection);
+}
+
+/// An alternative factory for [NgTestBed] that allows not typing `T`.
+///
+/// This is for compatibility reasons only and should not be used otherwise.
+NgTestBed/*<T>*/ createDynamicTestBed/*<T>*/({
+  Element host,
+  bool watchAngularLifecycle: true,
+}) {
+  return new NgTestBed/*<T>*/ ._allowDynamicType(
+    host: host,
+    watchAngularLifecycle: watchAngularLifecycle,
+  );
+}
 
 /// An immutable builder for creating a pre-configured AngularDart application.
 ///
@@ -99,6 +123,17 @@ class NgTestBed<T> {
     if (T == dynamic) {
       throw new GenericTypeMissingError();
     }
+    return new NgTestBed<T>._allowDynamicType(
+      host: host,
+      watchAngularLifecycle: watchAngularLifecycle,
+    );
+  }
+
+  // Used for compatibility only.
+  factory NgTestBed._allowDynamicType({
+    Element host,
+    bool watchAngularLifecycle: true,
+  }) {
     return new NgTestBed<T>._(
       host: host,
       providers: watchAngularLifecycle ? _lifecycleProviders : const [],
@@ -133,6 +168,15 @@ class NgTestBed<T> {
   ///
   /// Returns a future that completes with a fixture around the component.
   Future<NgTestFixture<T>> create({void beforeChangeDetection(T instance)}) {
+    return _createDynamic(
+      T,
+      beforeChangeDetection: beforeChangeDetection,
+    );
+  }
+
+  // Used for compatibility only. See `create` for public API.
+  Future<NgTestFixture<T>> _createDynamic(Type type,
+      {void beforeChangeDetection(T instance)}) {
     // We *purposefully* do not use async/await here - that always adds an
     // additional micro-task - we want this to fail fast without entering an
     // asynchronous event if another test is running.
@@ -146,7 +190,7 @@ class NgTestBed<T> {
     return new Future<NgTestFixture<T>>.sync(() {
       _checkForActiveTest();
       return bootstrapForTest(
-        T,
+        type,
         _host ?? _defaultHost(),
         beforeChangeDetection: beforeChangeDetection,
         addProviders: _concat(_providers, _stabilizers),
