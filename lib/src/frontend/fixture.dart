@@ -9,6 +9,20 @@ import 'package:angular2/angular2.dart';
 import 'package:angular_test/src/frontend/bed.dart';
 import 'package:angular_test/src/frontend/stabilizer.dart';
 
+/// Inject a service for [tokenOrType] from [fixture].
+///
+/// This is for compatibility reasons only and should not be used otherwise.
+/*=T*/ injectFromFixture/*<T>*/(NgTestFixture fixture, tokenOrType) {
+  return fixture._rootComponentRef.injector.get(tokenOrType);
+}
+
+/// Returns the component instance backing [fixture].
+///
+/// This is for compatibility reasons only and should not be used otherwise.
+/*=T*/ componentOfFixture/*<T>*/(NgTestFixture/*<T>*/ fixture) {
+  return fixture._rootComponentRef.instance;
+}
+
 class NgTestFixture<T> {
   final ApplicationRef _applicationRef;
   final ComponentRef _rootComponentRef;
