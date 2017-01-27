@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha+3
+
+- Fix a serious generic type error when `NgTestBed` is forked
+
 ## 1.0.0-alpha+2
 
 - Fix a generic type error
