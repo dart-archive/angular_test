@@ -3,11 +3,12 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
-
 import 'dart:html';
+
 import 'package:angular2/angular2.dart';
 import 'package:angular_test/src/frontend/bed.dart';
 import 'package:angular_test/src/frontend/stabilizer.dart';
+import 'package:pageloader/html.dart';
 
 /// Inject a service for [tokenOrType] from [fixture].
 ///
@@ -27,6 +28,8 @@ class NgTestFixture<T> {
   final ApplicationRef _applicationRef;
   final ComponentRef _rootComponentRef;
   final NgTestStabilizer _testStabilizer;
+
+  HtmlPageLoader _pageLoaderInstance;
 
   factory NgTestFixture(
     ApplicationRef applicationRef,
@@ -50,6 +53,22 @@ class NgTestFixture<T> {
     activeTest = null;
   }
 
+  /// Return a page object representing [pageObjectType] from the DOM.
+  Future/*<T>*/ getPageObject/*<T>*/(Type pageObjectType) async {
+    await update();
+    return _pageLoader.getInstance/*<T>*/(pageObjectType);
+  }
+
+  /// Returns a page loader instance represnting this test fixture.
+  PageLoader get _pageLoader => _pageLoaderInstance ??= new HtmlPageLoader(
+        rootElement,
+        executeSyncedFn: (fn) async {
+          await fn();
+          return () => update();
+        },
+        useShadowDom: false,
+      );
+
   /// Root element.
   Element get rootElement => _rootComponentRef.location.nativeElement;
 
@@ -71,7 +90,7 @@ class NgTestFixture<T> {
   ///   c.value = 5;
   /// });
   /// expect(fixture.text, contains('5 little piggies'));
-  Future<Null> update([void run(T instance)]) {
+  Future<Null> update([run(T instance)]) {
     return _testStabilizer.stabilize(run: () {
       if (run != null) {
         new Future<Null>.sync(() {
