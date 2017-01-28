@@ -23,28 +23,35 @@ main(List<String> args) async {
     _usage();
   }
 
+  var testsRunning = false;
   // Run pub serve, and wait for significant messages.
   final pubServeProcess = await Process.start('pub', const ['serve', 'test']);
-  pubServeProcess.stdout.map(UTF8.decode).listen((message) async {
+  var stdoutFuture =
+      pubServeProcess.stdout.map(UTF8.decode).listen((message) async {
     if (message.contains('Serving angular_testing')) {
       log('Using pub serve to generate AoT code for AngularDart...');
     } else if (message.contains('Build completed successfully')) {
+      if (testsRunning) {
+        throw new StateError("Should only get this output once.");
+      }
       success('Finished AoT compilation. Running tests...');
-      await _runTests(
+      testsRunning = true;
+      exitCode = await _runTests(
         includeFlags: parsedArgs['run-test-flag'],
         includePlatforms: parsedArgs['platform'],
       );
       log('Shutting down...');
       pubServeProcess.kill();
-      exitCode = 0;
     } else {
       log(message);
     }
-  });
-  pubServeProcess.stderr.map(UTF8.decode).forEach(error);
+  }).asFuture();
+  var stderrFuture = pubServeProcess.stderr.map(UTF8.decode).forEach(error);
+
+  await Future.wait([stdoutFuture, stderrFuture, pubServeProcess.exitCode]);
 }
 
-Future<Null> _runTests({
+Future<int> _runTests({
   List<String> includeFlags: const ['aot'],
   List<String> includePlatforms: const ['content-shell'],
 }) async {
@@ -56,9 +63,8 @@ Future<Null> _runTests({
     process.stderr.map(UTF8.decode).forEach(error),
     process.stdout.map(UTF8.decode).forEach(log),
   ]);
-  if (await process.exitCode != 0) {
-    exitCode = 1;
-  }
+
+  return await process.exitCode;
 }
 
 void _usage() {

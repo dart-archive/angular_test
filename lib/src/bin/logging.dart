@@ -30,5 +30,5 @@ void error(String message, {exception, stack}) {
 /// Starts listening to a new logger and outputting it through `print`.
 void initLogging(String name) {
   _currentLogger = new Logger(name);
-  _currentLogger.onRecord.forEach((message) => print(message.message));
+  _currentLogger.onRecord.forEach((message) => print(message.message.trim()));
 }
