@@ -51,7 +51,7 @@ Future<ComponentRef> bootstrapForTest/*<E>*/(
       appInjector,
       beforeChangeDetection: beforeChangeDetection,
     ).then((componentRef) async {
-      await ngZone.onStable.first;
+      await ngZone.onTurnDone.first;
       onErrorSub.cancel();
       if (caughtError != null) {
         return new Future.error(

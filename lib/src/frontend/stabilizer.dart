@@ -131,7 +131,7 @@ class NgZoneStabilizer extends NgTestStabilizer {
     NgZoneError caughtError;
     var finishedWithoutError = false;
     await Future.any([
-      _ngZone.onStable.first,
+      _ngZone.onTurnDone.first,
       _ngZone.onError.first.then((e) {
         if (!finishedWithoutError) {
           caughtError = e;
