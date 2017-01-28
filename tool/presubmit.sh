@@ -30,4 +30,4 @@ set -e
 pub run test -p vm -x aot
 
 # Run e2e-like tests that use Angular AoT compilation
-dart bin/test.dart
+pub run angular_test
