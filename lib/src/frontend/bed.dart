@@ -219,7 +219,7 @@ class NgTestBed<T> {
     Iterable providers,
     Iterable stabilizers,
   }) {
-    return new NgTestBed._(
+    return new NgTestBed<T>._(
       host: host ?? _host,
       providers: providers ?? _providers,
       stabilizers: stabilizers ?? _stabilizers,
