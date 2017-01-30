@@ -21,7 +21,7 @@ void main() {
     docRoot.append(testRoot);
   });
 
-  tearDown(() => disposeAnyRunningTest());
+  tearDown(disposeAnyRunningTest);
 
   test('should render, update, and destroy a component', () {
     return AngularLifecycle._runTest(docRoot, testRoot);

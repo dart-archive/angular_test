@@ -54,17 +54,17 @@ class NgTestFixture<T> {
   }
 
   /// Return a page object representing [pageObjectType] from the DOM.
-  Future/*<T>*/ getPageObject/*<T>*/(Type pageObjectType) async {
+  Future/*<T>*/ resolvePageObject/*<T>*/(Type pageObjectType) async {
     await update();
     return _pageLoader.getInstance/*<T>*/(pageObjectType);
   }
 
-  /// Returns a page loader instance represnting this test fixture.
+  /// A page loader instance representing this test fixture.
   PageLoader get _pageLoader => _pageLoaderInstance ??= new HtmlPageLoader(
         rootElement,
         executeSyncedFn: (fn) async {
           await fn();
-          return () => update();
+          return update;
         },
         useShadowDom: false,
       );
