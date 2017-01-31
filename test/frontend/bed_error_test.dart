@@ -12,7 +12,7 @@ import 'package:test/test.dart';
 
 @AngularEntrypoint()
 void main() {
-  tearDown(() => disposeAnyRunningTest());
+  tearDown(disposeAnyRunningTest);
 
   test('should be able to catch errors that occur synchronously', () {
     return CatchSynchronousErrors._runTest();

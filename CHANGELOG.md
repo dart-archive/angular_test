@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.0-alpha+4
+
+- Add built-in support for `package:pageloader`:
+
+```dart
+final fixture = await new NgTestBed<TestComponent>().create();
+final pageObject = await fixture.getPageObject/*<ClickCounterPO>*/(
+  ClickCounterPO,
+);
+expect(await pageObject.button.visibleText, 'Click count: 0');
+await pageObject.button.click();
+expect(await pageObject.button.visibleText, 'Click count: 1');
+```
+
 ## 1.0.0-alpha+3
 
 - Fix a serious generic type error when `NgTestBed` is forked
