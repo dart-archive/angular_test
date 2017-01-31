@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0-alpha+4
+## 1.0.0-alpha+2
 
 - Add built-in support for `package:pageloader`:
 
@@ -14,11 +14,7 @@ await pageObject.button.click();
 expect(await pageObject.button.visibleText, 'Click count: 1');
 ```
 
-## 1.0.0-alpha+3
-
 - Fix a serious generic type error when `NgTestBed` is forked
-
-## 1.0.0-alpha+2
 
 - Fix a generic type error
 - Added `compatibility.dart`, a temporary API to some users migrate

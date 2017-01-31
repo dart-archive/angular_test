@@ -23,7 +23,7 @@ import 'package:test/test.dart';
 
 @AngularEntrypoint()
 void main() {
-  tearDown(() => disposeAnyRunningTest());
+  tearDown(disposeAnyRunningTest);
 
   test('should render "Hello World"', () async {
     final testBed = new NgTestBed<HelloWorldComponent>();
@@ -38,6 +38,24 @@ void main() {
 class HelloWorldComponent {
   String name = 'World';
 }
+```
+
+You will need to also configure in `pubspec.yaml` to run code generation:
+
+```yaml
+transformers:
+  # Run the code generator on the entire package.
+  - angular2/transform/codegen
+
+  # Run the reflection remover on tests that have AoT enabled.
+  - angular2/transform/reflection_remover:
+      $include:
+          - test/test_using_angular_test.dart
+
+  # Allow test to proxy-load files so we can run AoT tests w/ pub serve.
+  - test/pub_serve:
+      $include: test/**_test.dart
+
 ```
 
 ## Running
