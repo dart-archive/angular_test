@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha+3
+
+- Fix the executable so `pub run angular_test` can be used
+
 ## 1.0.0-alpha+2
 
 - Add built-in support for `package:pageloader`:
