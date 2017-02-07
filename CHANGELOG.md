@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha+5
+
+- Update `pubspec.yaml` to tighten the constraint on AngularDart
+
 ## 1.0.0-alpha+4
 
 - Update `pubspec.yaml` so it properly lists AngularDart `3.0.0-alpha`
