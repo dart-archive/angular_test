@@ -37,9 +37,10 @@ main(List<String> args) async {
       success('Finished AoT compilation. Running tests...');
       testsRunning = true;
       exitCode = await _runTests(
-        includeFlags: parsedArgs['run-test-flag'],
-        includePlatforms: parsedArgs['platform'],
-      );
+          includeFlags: parsedArgs['run-test-flag'],
+          includePlatforms: parsedArgs['platform'],
+          testNames: parsedArgs['name'],
+          testPlainNames: parsedArgs['plain-name']);
       log('Shutting down...');
       pubServeProcess.kill();
     } else {
@@ -51,12 +52,16 @@ main(List<String> args) async {
   await Future.wait([stdoutFuture, stderrFuture, pubServeProcess.exitCode]);
 }
 
-Future<int> _runTests({
-  List<String> includeFlags: const ['aot'],
-  List<String> includePlatforms: const ['content-shell'],
-}) async {
+Future<int> _runTests(
+    {List<String> includeFlags: const ['aot'],
+    List<String> includePlatforms: const ['content-shell'],
+    List<String> testNames,
+    List<String> testPlainNames}) async {
   final args = ['run', 'test', '--pub-serve=8080'];
   args.addAll(includeFlags.map((f) => '-t $f'));
+  if (testNames != null) args.addAll(testNames.map((n) => '--name=$n'));
+  if (testPlainNames != null)
+    args.addAll(testPlainNames.map((n) => '--plain-name=$n'));
   args.add('--platform=${includePlatforms.map((p) => p.trim()).join(' ')}');
   final process = await Process.start('pub', args);
   await Future.wait([
@@ -98,4 +103,17 @@ final _argParser = new ArgParser()
     // TODO: Detect if content-shell is installed, fall back otherwise.
     defaultsTo: 'content-shell',
     allowMultiple: true,
-  );
+  )
+  ..addOption('name',
+      abbr: 'n',
+      help: 'A substring of the name of the test to run.\n'
+          'Regular expression syntax is supported.\n'
+          'If passed multiple times, tests must match all substrings.',
+      allowMultiple: true,
+      splitCommas: false)
+  ..addOption('plain-name',
+      abbr: 'N',
+      help: 'A plain-text substring of the name of the test to run.\n'
+          'If passed multiple times, tests must match all substrings.',
+      allowMultiple: true,
+      splitCommas: false);
