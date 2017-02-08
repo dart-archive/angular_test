@@ -1,6 +1,6 @@
 name: angular_test
 author: Dart Team <misc@dartlang.org>
-homepage: https://github.com/dart-lang/angular_testing
+homepage: https://github.com/dart-lang/angular_test
 description: Testing infrastructure for AngularDart
 version: 1.0.0-alpha+5
 
