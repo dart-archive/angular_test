@@ -16,7 +16,7 @@ import 'package:test/test.dart';
 /// ```dart
 /// expect(createComponent(), throwsInAngular(isStateError));
 /// ```
-Matcher throwsInAngular(Matcher matcher) => new Throws(new _OrWrapped(matcher));
+Matcher throwsInAngular(Matcher matcher) => throwsA(new _OrWrapped(matcher));
 
 class _OrWrapped extends Matcher {
   final Matcher _typeMatcher;
