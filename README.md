@@ -27,10 +27,10 @@ void main() {
 
   test('should render "Hello World"', () async {
     final testBed = new NgTestBed<HelloWorldComponent>();
-    final textFixture = await testBed.create();
+    final testFixture = await testBed.create();
     expect(testFixture.text, 'Hello World');
-    await textFixture.update((c) => c.name = 'Universe');
-    expect(textFixture.text, 'Hello Universe');
+    await testFixture.update((c) => c.name = 'Universe');
+    expect(testFixture.text, 'Hello Universe');
   });
 }
 

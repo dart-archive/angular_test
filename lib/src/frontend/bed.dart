@@ -76,7 +76,7 @@ NgTestBed/*<T>*/ createDynamicTestBed/*<T>*/({
 /// ```dart
 /// group('My tests', () {
 ///   NgTestBed<HelloWorldComponent> bed;
-///   NgTextFixture<HelloWorldComponent> fixture;
+///   NgTestFixture<HelloWorldComponent> fixture;
 ///
 ///   setUp(() => bed = new NgTestBed<HelloWorldComponent>());
 ///   tearDown(() => disposeAnyRunningTest());
