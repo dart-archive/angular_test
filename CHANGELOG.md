@@ -36,7 +36,7 @@ updates, and it **highly suggested** you don't use these APIs for any new code.
 
 ## 1.0.0-alpha+1
 
-- Change `NgTextFixture.update` to have a single optional parameter
+- Change `NgTestFixture.update` to have a single optional parameter
 
 ## 1.0.0-alpha
 

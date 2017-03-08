@@ -6,7 +6,7 @@ class TestAlreadyRunningError extends Error {
   @override
   String toString() {
     return ''
-        'Another instance of an `NgTextFixture` is still executing!\n\n'
+        'Another instance of an `NgTestFixture` is still executing!\n\n'
         'NgTestBed supports *one* test executing at a time to avoid timing '
         'conflicts or stability issues related to sharing a browser DOM.\n\n'
         'When you are done with a test, make sure to dispose fixtures:\n'
