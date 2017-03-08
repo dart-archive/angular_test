@@ -15,19 +15,23 @@ import 'package:path/path.dart' as p;
 /// Tests that require AoT code generation proxies through `pub serve`.
 main(List<String> args) async {
   initLogging('angular_test.bin.run');
-
   final parsedArgs = _argParser.parse(args);
   final pubspecFile = new File(p.join(parsedArgs['package'], 'pubspec.yaml'));
   if (!pubspecFile.existsSync()) {
     error('No "pubspec.yaml" found at ${pubspecFile.path}');
     _usage();
   }
-
+  bool verbose = parsedArgs['verbose'];
+  if (!verbose) {
+    var logFile = new File(p.join(Directory.systemTemp.path, 'angular_test_pub_serve_output.log'));
+    logFile.createSync();
+    log("The pub serve output is at ${logFile.uri}");
+    initFileWriting(logFile.openWrite());
+  }
   var testsRunning = false;
   // Run pub serve, and wait for significant messages.
   final pubServeProcess = await Process.start('pub', const ['serve', 'test']);
-  var stdoutFuture =
-      pubServeProcess.stdout.map(UTF8.decode).listen((message) async {
+  var stdoutFuture = pubServeProcess.stdout.map(UTF8.decode).listen((message) async {
     if (message.contains('Serving angular_testing')) {
       log('Using pub serve to generate AoT code for AngularDart...');
     } else if (message.contains('Build completed successfully')) {
@@ -44,24 +48,26 @@ main(List<String> args) async {
       log('Shutting down...');
       pubServeProcess.kill();
     } else {
-      log(message);
+      log(message, verbose: verbose);
     }
   }).asFuture();
-  var stderrFuture = pubServeProcess.stderr.map(UTF8.decode).forEach(error);
-
-  await Future.wait([stdoutFuture, stderrFuture, pubServeProcess.exitCode]);
+  var stderrFuture = pubServeProcess.stderr.map(UTF8.decode).forEach((String message) {
+    error(message, verbose: verbose);
+  });
+  await Future.wait([stdoutFuture, stderrFuture, pubServeProcess.exitCode]).whenComplete(() async {
+    await closeIOSink();
+  });
 }
 
 Future<int> _runTests(
     {List<String> includeFlags: const ['aot'],
-    List<String> includePlatforms: const ['content-shell'],
-    List<String> testNames,
-    List<String> testPlainNames}) async {
+      List<String> includePlatforms: const ['content-shell'],
+      List<String> testNames,
+      List<String> testPlainNames}) async {
   final args = ['run', 'test', '--pub-serve=8080'];
   args.addAll(includeFlags.map((f) => '-t $f'));
   if (testNames != null) args.addAll(testNames.map((n) => '--name=$n'));
-  if (testPlainNames != null)
-    args.addAll(testPlainNames.map((n) => '--plain-name=$n'));
+  if (testPlainNames != null) args.addAll(testPlainNames.map((n) => '--plain-name=$n'));
   args.add('--platform=${includePlatforms.map((p) => p.trim()).join(' ')}');
   final process = await Process.start('pub', args);
   await Future.wait([
@@ -79,30 +85,30 @@ void _usage() {
 
 final _argParser = new ArgParser()
   ..addOption(
-    'run-test-flag',
-    abbr: 't',
-    help: 'What flag(s) to include when running "pub run test"',
-    valueHelp: ''
-        'In order to have a fast test cycle, we only want to run tests '
-        'that have AoT required (all the ones created using this '
-        'package do).',
-    defaultsTo: 'aot',
-    allowMultiple: true,
+      'run-test-flag',
+      abbr: 't',
+      help: 'What flag(s) to include when running "pub run test"',
+      valueHelp: ''
+          'In order to have a fast test cycle, we only want to run tests '
+          'that have AoT required (all the ones created using this '
+          'package do).',
+      defaultsTo: 'aot',
+      allowMultiple: true,
   )
   ..addOption(
-    'package',
-    help: 'What directory containing a pub package to run tests in',
-    valueHelp: p.join('some', 'path', 'to', 'package'),
-    defaultsTo: p.current,
+      'package',
+      help: 'What directory containing a pub package to run tests in',
+      valueHelp: p.join('some', 'path', 'to', 'package'),
+      defaultsTo: p.current,
   )
   ..addOption(
-    'platform',
-    abbr: 'p',
-    help: 'What platform(s) to pass to pub run test',
-    valueHelp: 'Common examples are "content-shell", "dartium", "chrome"',
-    // TODO: Detect if content-shell is installed, fall back otherwise.
-    defaultsTo: 'content-shell',
-    allowMultiple: true,
+      'platform',
+      abbr: 'p',
+      help: 'What platform(s) to pass to pub run test',
+      valueHelp: 'Common examples are "content-shell", "dartium", "chrome"',
+      // TODO: Detect if content-shell is installed, fall back otherwise.
+      defaultsTo: 'content-shell',
+      allowMultiple: true,
   )
   ..addOption('name',
       abbr: 'n',
@@ -116,4 +122,9 @@ final _argParser = new ArgParser()
       help: 'A plain-text substring of the name of the test to run.\n'
           'If passed multiple times, tests must match all substrings.',
       allowMultiple: true,
-      splitCommas: false);
+      splitCommas: false)
+  ..addFlag('verbose',
+      abbr: 'v',
+      help: 'Whether to display pub serve output as well when running tests.\n'
+          'Defaults to false.',
+      defaultsTo: false);
