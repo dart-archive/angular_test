@@ -61,9 +61,9 @@ main(List<String> args) async {
 
 Future<int> _runTests(
     {List<String> includeFlags: const ['aot'],
-      List<String> includePlatforms: const ['content-shell'],
-      List<String> testNames,
-      List<String> testPlainNames}) async {
+    List<String> includePlatforms: const ['content-shell'],
+    List<String> testNames,
+    List<String> testPlainNames}) async {
   final args = ['run', 'test', '--pub-serve=8080'];
   args.addAll(includeFlags.map((f) => '-t $f'));
   if (testNames != null) args.addAll(testNames.map((n) => '--name=$n'));
@@ -85,30 +85,30 @@ void _usage() {
 
 final _argParser = new ArgParser()
   ..addOption(
-      'run-test-flag',
-      abbr: 't',
-      help: 'What flag(s) to include when running "pub run test"',
-      valueHelp: ''
-          'In order to have a fast test cycle, we only want to run tests '
-          'that have AoT required (all the ones created using this '
-          'package do).',
-      defaultsTo: 'aot',
-      allowMultiple: true,
+    'run-test-flag',
+    abbr: 't',
+    help: 'What flag(s) to include when running "pub run test"',
+    valueHelp: ''
+        'In order to have a fast test cycle, we only want to run tests '
+        'that have AoT required (all the ones created using this '
+        'package do).',
+    defaultsTo: 'aot',
+    allowMultiple: true,
   )
   ..addOption(
-      'package',
-      help: 'What directory containing a pub package to run tests in',
-      valueHelp: p.join('some', 'path', 'to', 'package'),
-      defaultsTo: p.current,
+    'package',
+    help: 'What directory containing a pub package to run tests in',
+    valueHelp: p.join('some', 'path', 'to', 'package'),
+    defaultsTo: p.current,
   )
   ..addOption(
-      'platform',
-      abbr: 'p',
-      help: 'What platform(s) to pass to pub run test',
-      valueHelp: 'Common examples are "content-shell", "dartium", "chrome"',
-      // TODO: Detect if content-shell is installed, fall back otherwise.
-      defaultsTo: 'content-shell',
-      allowMultiple: true,
+    'platform',
+    abbr: 'p',
+    help: 'What platform(s) to pass to pub run test',
+    valueHelp: 'Common examples are "content-shell", "dartium", "chrome"',
+    // TODO: Detect if content-shell is installed, fall back otherwise.
+    defaultsTo: 'content-shell',
+    allowMultiple: true,
   )
   ..addOption('name',
       abbr: 'n',
