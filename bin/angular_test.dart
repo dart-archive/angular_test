@@ -1,5 +1,5 @@
 // Copyright (c) 2016, the Dart project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
+// for details. All rights reserved. Us e of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
@@ -23,7 +23,8 @@ main(List<String> args) async {
   }
   bool verbose = parsedArgs['verbose'];
   if (!verbose) {
-    var logFile = new File(p.join(Directory.systemTemp.path, 'angular_test_pub_serve_output.log'));
+    var logFile = new File(
+        p.join(Directory.systemTemp.path, 'angular_test_pub_serve_output.log'));
     logFile.createSync();
     log("The pub serve output is at ${logFile.uri}");
     initFileWriting(logFile.openWrite());
@@ -31,7 +32,8 @@ main(List<String> args) async {
   var testsRunning = false;
   // Run pub serve, and wait for significant messages.
   final pubServeProcess = await Process.start('pub', const ['serve', 'test']);
-  var stdoutFuture = pubServeProcess.stdout.map(UTF8.decode).listen((message) async {
+  var stdoutFuture =
+      pubServeProcess.stdout.map(UTF8.decode).listen((message) async {
     if (message.contains('Serving angular_testing')) {
       log('Using pub serve to generate AoT code for AngularDart...');
     } else if (message.contains('Build completed successfully')) {
@@ -51,10 +53,15 @@ main(List<String> args) async {
       log(message, verbose: verbose);
     }
   }).asFuture();
-  var stderrFuture = pubServeProcess.stderr.map(UTF8.decode).forEach((String message) {
+  var stderrFuture =
+      pubServeProcess.stderr.map(UTF8.decode).forEach((String message) {
     error(message, verbose: verbose);
   });
-  await Future.wait([stdoutFuture, stderrFuture, pubServeProcess.exitCode]).whenComplete(() async {
+  await Future.wait([
+    stdoutFuture,
+    stderrFuture,
+    pubServeProcess.exitCode
+  ]).whenComplete(() async {
     await closeIOSink();
   });
 }
@@ -67,7 +74,8 @@ Future<int> _runTests(
   final args = ['run', 'test', '--pub-serve=8080'];
   args.addAll(includeFlags.map((f) => '-t $f'));
   if (testNames != null) args.addAll(testNames.map((n) => '--name=$n'));
-  if (testPlainNames != null) args.addAll(testPlainNames.map((n) => '--plain-name=$n'));
+  if (testPlainNames != null)
+    args.addAll(testPlainNames.map((n) => '--plain-name=$n'));
   args.add('--platform=${includePlatforms.map((p) => p.trim()).join(' ')}');
   final process = await Process.start('pub', args);
   await Future.wait([
