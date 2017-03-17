@@ -51,6 +51,7 @@ Future<ComponentRef> bootstrapForTest/*<E>*/(
       appInjector,
       beforeChangeDetection: beforeChangeDetection,
     ).then((componentRef) async {
+      hostElement.append(componentRef.location.nativeElement);
       await ngZone.onTurnDone.first;
       onErrorSub.cancel();
       if (caughtError != null) {
@@ -72,10 +73,9 @@ Future<ComponentRef> _runAndLoadComponent/*<E>*/(
   void beforeChangeDetection(component/*=E*/),
 }) async {
   final DynamicComponentLoader loader = appInjector.get(DynamicComponentLoader);
-  final componentRef = await loader.loadAsRootIntoNode(
+  final componentRef = await loader.load(
     appComponentType,
     appInjector,
-    overrideNode: hostElement,
   );
   if (beforeChangeDetection != null) {
     beforeChangeDetection(componentRef.instance);

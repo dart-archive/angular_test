@@ -1,4 +1,6 @@
-# Changelog
+## 1.0.0-alpha+6
+
+- Address breaking changes in `angular2`: `3.0.0-alpha+1`.
 
 ## 1.0.0-alpha+5
 
