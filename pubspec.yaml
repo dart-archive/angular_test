@@ -11,7 +11,7 @@ executables:
   angular_test:
 
 dependencies:
-  angular2: '^3.0.0-beta'
+  angular2: '^3.0.0-alpha+1'
   ansicolor: '^0.0.9'
   pageloader: '^2.2.5'
 
