@@ -15,14 +15,20 @@ import 'package:path/path.dart' as p;
 /// Tests that require AoT code generation proxies through `pub serve`.
 main(List<String> args) async {
   initLogging('angular_test.bin.run');
-
   final parsedArgs = _argParser.parse(args);
   final pubspecFile = new File(p.join(parsedArgs['package'], 'pubspec.yaml'));
   if (!pubspecFile.existsSync()) {
     error('No "pubspec.yaml" found at ${pubspecFile.path}');
     _usage();
   }
-
+  bool verbose = parsedArgs['verbose'];
+  if (!verbose) {
+    var logFile = new File(
+        p.join(Directory.systemTemp.path, 'angular_test_pub_serve_output.log'));
+    logFile.createSync();
+    log("The pub serve output is at ${logFile.uri}");
+    initFileWriting(logFile.openWrite());
+  }
   var testsRunning = false;
   // Run pub serve, and wait for significant messages.
   final pubServeProcess = await Process.start('pub', const ['serve', 'test']);
@@ -44,12 +50,20 @@ main(List<String> args) async {
       log('Shutting down...');
       pubServeProcess.kill();
     } else {
-      log(message);
+      log(message, verbose: verbose);
     }
   }).asFuture();
-  var stderrFuture = pubServeProcess.stderr.map(UTF8.decode).forEach(error);
-
-  await Future.wait([stdoutFuture, stderrFuture, pubServeProcess.exitCode]);
+  var stderrFuture =
+      pubServeProcess.stderr.map(UTF8.decode).forEach((String message) {
+    error(message, verbose: verbose);
+  });
+  await Future.wait([
+    stdoutFuture,
+    stderrFuture,
+    pubServeProcess.exitCode
+  ]).whenComplete(() async {
+    await closeIOSink();
+  });
 }
 
 Future<int> _runTests(
@@ -116,4 +130,9 @@ final _argParser = new ArgParser()
       help: 'A plain-text substring of the name of the test to run.\n'
           'If passed multiple times, tests must match all substrings.',
       allowMultiple: true,
-      splitCommas: false);
+      splitCommas: false)
+  ..addFlag('verbose',
+      abbr: 'v',
+      help: 'Whether to display pub serve output as well when running tests.\n'
+          'Defaults to false.',
+      defaultsTo: false);
