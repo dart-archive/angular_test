@@ -15,8 +15,8 @@ import 'package:angular_test/src/frontend/stabilizer.dart';
 NgTestFixture activeTest;
 
 /// Returns a new [List] merging iterables [a] and [b].
-List/*<E>*/ _concat/*<E>*/(Iterable/*<E>*/ a, Iterable/*<E>*/ b) {
-  return new List/*<E>*/ .from(a)..addAll(b);
+List<E> _concat<E>(Iterable<E> a, Iterable<E> b) {
+  return new List<E>.from(a)..addAll(b);
 }
 
 /// If any [NgTestFixture] is currently executing, calls `dispose` on it.
@@ -33,10 +33,10 @@ Future<Null> disposeAnyRunningTest() async => activeTest?.dispose();
 /// An alternative method for [NgTestBed.create] that allows a dynamic [type].
 ///
 /// This is for compatibility reasons only and should not be used otherwise.
-Future<NgTestFixture/*<T>*/ > createDynamicFixture/*<T>*/(
-  NgTestBed/*<T>*/ bed,
+Future<NgTestFixture<T>> createDynamicFixture<T>(
+  NgTestBed<T> bed,
   Type type, {
-  void beforeChangeDetection(T instance),
+  void beforeChangeDetection(T componentInstance),
 }) {
   return bed._createDynamic(type, beforeChangeDetection: beforeChangeDetection);
 }
@@ -44,11 +44,11 @@ Future<NgTestFixture/*<T>*/ > createDynamicFixture/*<T>*/(
 /// An alternative factory for [NgTestBed] that allows not typing `T`.
 ///
 /// This is for compatibility reasons only and should not be used otherwise.
-NgTestBed/*<T>*/ createDynamicTestBed/*<T>*/({
+NgTestBed<T> createDynamicTestBed<T>({
   Element host,
   bool watchAngularLifecycle: true,
 }) {
-  return new NgTestBed/*<T>*/ ._allowDynamicType(
+  return new NgTestBed<T>._allowDynamicType(
     host: host,
     watchAngularLifecycle: watchAngularLifecycle,
   );
@@ -197,12 +197,12 @@ class NgTestBed<T> {
       ).then((componentRef) async {
         _checkForActiveTest();
         final allStabilizers = new NgTestStabilizer.all(
-          _stabilizers.map/*<NgTestStabilizer>*/((s) {
-            return componentRef.injector.get(s);
+          _stabilizers.map<NgTestStabilizer>((s) {
+            return componentRef.injector.get(s) as NgTestStabilizer;
           }),
         );
         await allStabilizers.stabilize();
-        return new NgTestFixture(
+        return activeTest = new NgTestFixture(
           componentRef.injector.get(ApplicationRef),
           componentRef,
           allStabilizers,

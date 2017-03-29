@@ -10,6 +10,8 @@ import 'package:angular_test/src/bin/logging.dart';
 import 'package:args/args.dart';
 import 'package:path/path.dart' as p;
 
+final _pubBin = Platform.isWindows ? 'pub.bat' : 'pub';
+
 /// Runs all tests using `pub run test` in the specified directory.
 ///
 /// Tests that require AoT code generation proxies through `pub serve`.
@@ -31,7 +33,7 @@ main(List<String> args) async {
   }
   var testsRunning = false;
   // Run pub serve, and wait for significant messages.
-  final pubServeProcess = await Process.start('pub', const ['serve', 'test']);
+  final pubServeProcess = await Process.start(_pubBin, const ['serve', 'test']);
   var stdoutFuture =
       pubServeProcess.stdout.map(UTF8.decode).listen((message) async {
     if (message.contains('Serving angular_testing')) {

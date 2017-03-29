@@ -13,14 +13,14 @@ import 'package:pageloader/html.dart';
 /// Inject a service for [tokenOrType] from [fixture].
 ///
 /// This is for compatibility reasons only and should not be used otherwise.
-/*=T*/ injectFromFixture/*<T>*/(NgTestFixture fixture, tokenOrType) {
+T injectFromFixture<T>(NgTestFixture fixture, tokenOrType) {
   return fixture._rootComponentRef.injector.get(tokenOrType);
 }
 
 /// Returns the component instance backing [fixture].
 ///
 /// This is for compatibility reasons only and should not be used otherwise.
-/*=T*/ componentOfFixture/*<T>*/(NgTestFixture/*<T>*/ fixture) {
+T componentOfFixture<T>(NgTestFixture<T> fixture) {
   return fixture._rootComponentRef.instance;
 }
 
@@ -54,9 +54,9 @@ class NgTestFixture<T> {
   }
 
   /// Return a page object representing [pageObjectType] from the DOM.
-  Future/*<T>*/ resolvePageObject/*<T>*/(Type pageObjectType) async {
+  Future<T> resolvePageObject<T>(Type pageObjectType) async {
     await update();
-    return _pageLoader.getInstance/*<T>*/(pageObjectType);
+    return _pageLoader.getInstance<T>(pageObjectType);
   }
 
   /// A page loader instance representing this test fixture.

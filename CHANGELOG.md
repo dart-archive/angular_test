@@ -1,3 +1,10 @@
+## 1.0.0-beta
+
+- Prepare to support `angular2: 3.0.0-beta`.
+- Replace all uses of generic comment with proper syntax.
+- Fixed a bug where `activeTest` was never set (and therefore disposed).
+- Fixed a bug where `pub`, not `pub.bat`, is run in windows.
+
 ## 1.0.0-alpha+6
 
 - Address breaking changes in `angular2`: `3.0.0-alpha+1`.
