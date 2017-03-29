@@ -18,10 +18,10 @@ import 'package:angular2/platform/browser_static.dart';
 /// If [beforeChangeDetection] is specified, allows interacting with instance of
 /// component created _before_ the initial change detection occurs; for example
 /// setting up properties or state.
-Future<ComponentRef> bootstrapForTest/*<E>*/(
+Future<ComponentRef> bootstrapForTest<E>(
   Type appComponentType,
   Element hostElement, {
-  void beforeChangeDetection(component/*=E*/),
+  void beforeChangeDetection(E componentInstance),
   List addProviders: const [],
 }) {
   if (appComponentType == null) {
@@ -65,12 +65,12 @@ Future<ComponentRef> bootstrapForTest/*<E>*/(
   });
 }
 
-Future<ComponentRef> _runAndLoadComponent/*<E>*/(
+Future<ComponentRef> _runAndLoadComponent<E>(
   ApplicationRefImpl appRef,
   Type appComponentType,
   Element hostElement,
   Injector appInjector, {
-  void beforeChangeDetection(component/*=E*/),
+  void beforeChangeDetection(E componentInstance),
 }) async {
   final DynamicComponentLoader loader = appInjector.get(DynamicComponentLoader);
   final componentRef = await loader.load(
