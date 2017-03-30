@@ -1,3 +1,7 @@
+## 1.0.0-beta+1
+
+- Properly fix support for windows by using `pub.bat`.
+
 ## 1.0.0-beta
 
 - Prepare to support `angular2: 3.0.0-beta`.
