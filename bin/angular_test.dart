@@ -68,18 +68,19 @@ main(List<String> args) async {
   });
 }
 
-Future<int> _runTests(
-    {List<String> includeFlags: const ['aot'],
-    List<String> includePlatforms: const ['content-shell'],
-    List<String> testNames,
-    List<String> testPlainNames}) async {
+Future<int> _runTests({
+  List<String> includeFlags: const ['aot'],
+  List<String> includePlatforms: const ['content-shell'],
+  List<String> testNames,
+  List<String> testPlainNames,
+}) async {
   final args = ['run', 'test', '--pub-serve=8080'];
   args.addAll(includeFlags.map((f) => '-t $f'));
   if (testNames != null) args.addAll(testNames.map((n) => '--name=$n'));
   if (testPlainNames != null)
     args.addAll(testPlainNames.map((n) => '--plain-name=$n'));
   args.add('--platform=${includePlatforms.map((p) => p.trim()).join(' ')}');
-  final process = await Process.start('pub', args);
+  final process = await Process.start(_pubBin, args);
   await Future.wait([
     process.stderr.map(UTF8.decode).forEach(error),
     process.stdout.map(UTF8.decode).forEach(log),
@@ -116,25 +117,30 @@ final _argParser = new ArgParser()
     abbr: 'p',
     help: 'What platform(s) to pass to pub run test',
     valueHelp: 'Common examples are "content-shell", "dartium", "chrome"',
-    // TODO: Detect if content-shell is installed, fall back otherwise.
     defaultsTo: 'content-shell',
     allowMultiple: true,
   )
-  ..addOption('name',
-      abbr: 'n',
-      help: 'A substring of the name of the test to run.\n'
-          'Regular expression syntax is supported.\n'
-          'If passed multiple times, tests must match all substrings.',
-      allowMultiple: true,
-      splitCommas: false)
-  ..addOption('plain-name',
-      abbr: 'N',
-      help: 'A plain-text substring of the name of the test to run.\n'
-          'If passed multiple times, tests must match all substrings.',
-      allowMultiple: true,
-      splitCommas: false)
-  ..addFlag('verbose',
-      abbr: 'v',
-      help: 'Whether to display pub serve output as well when running tests.\n'
-          'Defaults to false.',
-      defaultsTo: false);
+  ..addOption(
+    'name',
+    abbr: 'n',
+    help: 'A substring of the name of the test to run.\n'
+        'Regular expression syntax is supported.\n'
+        'If passed multiple times, tests must match all substrings.',
+    allowMultiple: true,
+    splitCommas: false,
+  )
+  ..addOption(
+    'plain-name',
+    abbr: 'N',
+    help: 'A plain-text substring of the name of the test to run.\n'
+        'If passed multiple times, tests must match all substrings.',
+    allowMultiple: true,
+    splitCommas: false,
+  )
+  ..addFlag(
+    'verbose',
+    abbr: 'v',
+    help: 'Whether to display pub serve output as well when running tests.\n'
+        'Defaults to false.',
+    defaultsTo: false,
+  );
