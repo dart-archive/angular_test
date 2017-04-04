@@ -6,9 +6,13 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:angular2/angular2.dart';
+import 'package:angular2/src/core/linker/view_ref.dart';
+import 'package:angular2/src/debug/debug_app_view.dart';
+import 'package:angular2/src/debug/debug_node.dart';
 import 'package:angular_test/src/frontend/bed.dart';
 import 'package:angular_test/src/frontend/stabilizer.dart';
-import 'package:pageloader/html.dart';
+import 'package:func/func.dart';
+import 'package:pageloader/objects.dart';
 
 /// Inject a service for [tokenOrType] from [fixture].
 ///
@@ -26,22 +30,42 @@ T componentOfFixture<T>(NgTestFixture<T> fixture) {
 
 class NgTestFixture<T> {
   final ApplicationRef _applicationRef;
+  final Func2<Element, NgTestFixture<T>, PageLoader> _pageLoaderFactory;
   final ComponentRef _rootComponentRef;
   final NgTestStabilizer _testStabilizer;
 
-  HtmlPageLoader _pageLoaderInstance;
+  PageLoader _pageLoaderInstance;
 
   factory NgTestFixture(
     ApplicationRef applicationRef,
+    PageLoader pageLoaderFactory(Element element, NgTestFixture<T> fixture),
     ComponentRef rootComponentRef,
     NgTestStabilizer testStabilizer,
   ) = NgTestFixture<T>._;
 
   NgTestFixture._(
     this._applicationRef,
+    this._pageLoaderFactory,
     this._rootComponentRef,
     this._testStabilizer,
   );
+
+  /// Whether the test component was generated in debug-mode.
+  bool get _isDebugMode {
+    return (_rootComponentRef.hostView as ViewRefImpl).appView is DebugAppView;
+  }
+
+  /// Root debug element, throwing if not available.
+  DebugElement get _debugElement {
+    if (_isDebugMode) {
+      var node = getDebugNode(_rootComponentRef.location.nativeElement);
+      if (node is DebugElement) {
+        return node;
+      }
+      throw new StateError('Root is not an element');
+    }
+    throw new UnsupportedError('Cannot utilize in codegen release mode');
+  }
 
   /// Destroys the test case, returning a future that completes after disposed.
   ///
@@ -60,14 +84,53 @@ class NgTestFixture<T> {
   }
 
   /// A page loader instance representing this test fixture.
-  PageLoader get _pageLoader => _pageLoaderInstance ??= new HtmlPageLoader(
-        rootElement,
-        executeSyncedFn: (fn) async {
-          await fn();
-          return update;
-        },
-        useShadowDom: false,
-      );
+  PageLoader get _pageLoader {
+    return _pageLoaderInstance ??= _pageLoaderFactory(rootElement, this);
+  }
+
+  /// Returns the first component instance that matches predicate [test].
+  ///
+  /// Example use:
+  /// ```dart
+  /// await fixture.query<FooComponent>(
+  ///   (el) => el.componentInstance is FooComponent,
+  ///   (foo) {
+  ///     // Run expectation or interact.
+  ///   },
+  /// );
+  /// ```
+  ///
+  /// Calls [run] with `null` if there was no matching element.
+  ///
+  /// **NOTE**: The root component is _not_ query-able. See [update] instead.
+  Future<Null> query<E>(bool test(DebugElement element), run(E instance)) {
+    final instance = _debugElement.query(test)?.componentInstance;
+    return update((_) => run(instance));
+  }
+
+  /// Returns all component instances that matches predicate [test].
+  ///
+  /// Example use:
+  /// ```dart
+  /// await fixture.queryAll<FooComponent>(
+  ///   (el) => el.componentInstance is FooComponent,
+  ///   (foo) {
+  ///     // Run expectation or interact.
+  ///   },
+  /// );
+  /// ```
+  ///
+  /// Calls [run] with an empty iterable if there was no matching element.
+  ///
+  /// **NOTE**: The root component is _not_ query-able. See [update] instead.
+  Future<Null> queryAll<E>(
+    bool test(DebugElement element),
+    run(Iterable<E> instances),
+  ) {
+    return update((_) {
+      return run(_debugElement.queryAll(test).map((e) => e.componentInstance));
+    });
+  }
 
   /// Root element.
   Element get rootElement => _rootComponentRef.location.nativeElement;

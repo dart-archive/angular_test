@@ -1,3 +1,27 @@
+## 1.0.0-beta+2
+
+- Add support for setting a custom `PageLoader` factory:
+
+```dart
+testBed = testBed.setPageLoader(
+  (element) => new CustomPageLoader(...),
+);
+```
+
+- Add support for `query` and `queryAll` to `NgTestFixture`. This works similar
+  to the `update` command, but is called back with either a single or multiple
+  _child_ component instances to interact with or run expectations against:
+
+```dart
+// Assert we have 3 instances of <child>.
+await fixture.queryAll(
+  (el) => el.componentInstance is ChildComponent,
+  (children) {
+    expect(children, hasLength(3));
+  },
+);
+```
+
 ## 1.0.0-beta+1
 
 - Properly fix support for windows by using `pub.bat`.
