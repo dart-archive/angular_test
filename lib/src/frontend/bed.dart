@@ -178,7 +178,7 @@ class NgTestBed<T> {
     return fork(stabilizers: _concat(_stabilizers, stabilizers));
   }
 
-  /// Returns an ew instance of [NgTestBed] with [createPageLoader] set.
+  /// Returns a new instance of [NgTestBed] with [createPageLoader] set.
   NgTestBed<T> setPageLoader(
     PageLoader createPageLoader(Element element, NgTestFixture<T> fixture),
   ) {
