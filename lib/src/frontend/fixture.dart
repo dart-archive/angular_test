@@ -73,6 +73,7 @@ class NgTestFixture<T> {
   Future<Null> dispose() async {
     await update();
     _rootComponentRef.destroy();
+    (_rootComponentRef.location.nativeElement as Element).parent.remove();
     _applicationRef.dispose();
     activeTest = null;
   }

@@ -14,11 +14,16 @@ dependencies:
   angular2: '>=3.0.0-alpha+1 <4.0.0'
   ansicolor: '^0.0.9'
   args: '^0.13.7'
+  func: '^0.1.1'
   logging: '^0.11.3+1'
   matcher: '^0.12.0+2'
   pageloader: '^2.2.5'
   path: '^1.4.1'
   test: '^0.12.17'
+
+# Remove before publishing.
+dependency_overrides:
+  quiver:
 
 transformers:
   # Run the code generator on the entire package.

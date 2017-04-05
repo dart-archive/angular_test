@@ -4,6 +4,8 @@ Testing infrastructure and runner for [AngularDart][gh_angular_dart].
 
 [gh_angular_dart]: https://github.com/dart-lang/angular2
 
+It's **strongly recommended** to view the `test/` folder for examples and recommended patterns.
+
 ## Usage
 
 `angular_test` is both a framework for writing tests for AngularDart components _and_ a
