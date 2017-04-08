@@ -33,7 +33,7 @@ main(List<String> args) async {
   }
   var testsRunning = false;
   // Run pub serve, and wait for significant messages.
-  final pubServeProcess = await Process.start(_pubBin, const ['serve', 'test']);
+  final pubServeProcess = await Process.start(_pubBin, ['serve', 'test', '--port=${parsedArgs['port']}']);
   var stdoutFuture =
       pubServeProcess.stdout.map(UTF8.decode).listen((message) async {
     if (message.contains('Serving angular_testing')) {
@@ -48,7 +48,8 @@ main(List<String> args) async {
           includeFlags: parsedArgs['run-test-flag'],
           includePlatforms: parsedArgs['platform'],
           testNames: parsedArgs['name'],
-          testPlainNames: parsedArgs['plain-name']);
+          testPlainNames: parsedArgs['plain-name'],
+          port: parsedArgs['port']);
       log('Shutting down...');
       pubServeProcess.kill();
     } else {
@@ -73,8 +74,9 @@ Future<int> _runTests({
   List<String> includePlatforms: const ['content-shell'],
   List<String> testNames,
   List<String> testPlainNames,
+  String port: '8080'
 }) async {
-  final args = ['run', 'test', '--pub-serve=8080'];
+  final args = ['run', 'test', '--pub-serve=$port'];
   args.addAll(includeFlags.map((f) => '-t $f'));
   if (testNames != null) args.addAll(testNames.map((n) => '--name=$n'));
   if (testPlainNames != null)
@@ -136,6 +138,12 @@ final _argParser = new ArgParser()
         'If passed multiple times, tests must match all substrings.',
     allowMultiple: true,
     splitCommas: false,
+  )
+  ..addOption(
+      'port',
+      help: 'What port to use for pub serve.\n',
+      valueHelp: 'Using port `0`, a random port will be assigned to pub serve.\n',
+      defaultsTo: '8080'
   )
   ..addFlag(
     'verbose',
