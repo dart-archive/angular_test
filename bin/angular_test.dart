@@ -11,6 +11,7 @@ import 'package:args/args.dart';
 import 'package:path/path.dart' as p;
 
 final _pubBin = Platform.isWindows ? 'pub.bat' : 'pub';
+final RegExp _serveRegexp = new RegExp(r'^Serving\s+.*\s+on\s+(.*)$');
 
 /// Runs all tests using `pub run test` in the specified directory.
 ///
@@ -33,14 +34,27 @@ main(List<String> args) async {
   }
   var testsRunning = false;
   // Run pub serve, and wait for significant messages.
-  final pubServeProcess = await Process.start(_pubBin, ['serve', 'test', '--port=${parsedArgs['port']}']);
+  final pubServeProcess = await Process
+      .start(_pubBin, ['serve', 'test', '--port=${parsedArgs['port']}']);
+  Uri serveUri;
   var stdoutFuture =
       pubServeProcess.stdout.map(UTF8.decode).listen((message) async {
+    if (serveUri == null) {
+      // need to find the origin on which pub serve is started
+      Match serveMatch = _serveRegexp.firstMatch(message);
+      if (serveMatch != null) {
+        serveUri = Uri.parse(serveMatch[1]);
+        log('pub serve started on: ${serveUri}');
+      }
+    }
     if (message.contains('Serving angular_testing')) {
       log('Using pub serve to generate AoT code for AngularDart...');
     } else if (message.contains('Build completed successfully')) {
       if (testsRunning) {
-        throw new StateError("Should only get this output once.");
+        throw new StateError('Should only get this output once.');
+      }
+      if (serveUri == null) {
+        throw new StateError('Could not determine serve host and port.');
       }
       success('Finished AoT compilation. Running tests...');
       testsRunning = true;
@@ -49,7 +63,7 @@ main(List<String> args) async {
           includePlatforms: parsedArgs['platform'],
           testNames: parsedArgs['name'],
           testPlainNames: parsedArgs['plain-name'],
-          port: parsedArgs['port']);
+          port: serveUri.port);
       log('Shutting down...');
       pubServeProcess.kill();
     } else {
@@ -69,13 +83,15 @@ main(List<String> args) async {
   });
 }
 
-Future<int> _runTests({
-  List<String> includeFlags: const ['aot'],
-  List<String> includePlatforms: const ['content-shell'],
-  List<String> testNames,
-  List<String> testPlainNames,
-  String port: '8080'
-}) async {
+Future<int> _runTests(
+    {List<String> includeFlags: const ['aot'],
+    List<String> includePlatforms: const ['content-shell'],
+    List<String> testNames,
+    List<String> testPlainNames,
+    int port}) async {
+  if (port == 0) {
+    throw new ArgumentError.value(port, 'port must not be `0`');
+  }
   final args = ['run', 'test', '--pub-serve=$port'];
   args.addAll(includeFlags.map((f) => '-t $f'));
   if (testNames != null) args.addAll(testNames.map((n) => '--name=$n'));
@@ -139,12 +155,11 @@ final _argParser = new ArgParser()
     allowMultiple: true,
     splitCommas: false,
   )
-  ..addOption(
-      'port',
+  ..addOption('port',
       help: 'What port to use for pub serve.\n',
-      valueHelp: 'Using port `0`, a random port will be assigned to pub serve.\n',
-      defaultsTo: '8080'
-  )
+      valueHelp:
+          'Using port `0`, a random port will be assigned to pub serve.\n',
+      defaultsTo: '8080')
   ..addFlag(
     'verbose',
     abbr: 'v',
