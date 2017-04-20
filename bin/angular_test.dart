@@ -3,19 +3,16 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:angular_test/src/bin/logging.dart';
+import 'package:angular_test/src/util.dart';
 import 'package:args/args.dart';
 import 'package:path/path.dart' as p;
 import 'package:stack_trace/stack_trace.dart';
 
 final _pubBin = Platform.isWindows ? 'pub.bat' : 'pub';
 final RegExp _serveRegexp = new RegExp(r'^Serving\s+.*\s+on\s+(.*)$');
-
-Stream<String> _standardIoToLines(Stream<List<int>> source) =>
-    source.transform(SYSTEM_ENCODING.decoder).transform(const LineSplitter());
 
 /// Runs all tests using `pub run test` in the specified directory.
 ///
@@ -57,7 +54,7 @@ main(List<String> args) async {
         .start(_pubBin, ['serve', 'test', '--port=${parsedArgs['port']}']);
     Uri serveUri;
     var stdoutFuture =
-        _standardIoToLines(pubServeProcess.stdout).forEach((message) async {
+        standardIoToLines(pubServeProcess.stdout).forEach((message) async {
       if (serveUri == null) {
         // need to find the origin on which pub serve is started
         Match serveMatch = _serveRegexp.firstMatch(message);
@@ -89,7 +86,7 @@ main(List<String> args) async {
       }
     });
     var stderrFuture =
-        _standardIoToLines(pubServeProcess.stderr).forEach((String message) {
+        standardIoToLines(pubServeProcess.stderr).forEach((String message) {
       error(message, verbose: verbose);
     });
     await Future.wait([
@@ -123,8 +120,8 @@ Future<int> _runTests(
   args.add('--platform=${includePlatforms.map((p) => p.trim()).join(' ')}');
   final process = await Process.start(_pubBin, args);
   await Future.wait([
-    _standardIoToLines(process.stderr).forEach(error),
-    _standardIoToLines(process.stdout).forEach(log),
+    standardIoToLines(process.stderr).forEach(error),
+    standardIoToLines(process.stdout).forEach(log),
   ]);
 
   return await process.exitCode;
