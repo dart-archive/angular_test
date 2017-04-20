@@ -6,9 +6,11 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:angular2/src/core/application_ref.dart';
+import 'package:angular2/src/core/change_detection/constants.dart';
 import 'package:angular2/src/core/linker/app_view_utils.dart';
 import 'package:angular2/angular2.dart';
 import 'package:angular2/platform/browser_static.dart';
+import 'package:angular2/src/core/linker/view_ref.dart';
 
 /// Returns a future that completes with a new instantiated component.
 ///
@@ -72,14 +74,22 @@ Future<ComponentRef> _runAndLoadComponent<E>(
   Injector appInjector, {
   void beforeChangeDetection(E componentInstance),
 }) async {
-  final DynamicComponentLoader loader = appInjector.get(DynamicComponentLoader);
-  final componentRef = await loader.load(
-    appComponentType,
-    appInjector,
-  );
+  final resolver = appInjector.get(ComponentResolver) as ComponentResolver;
+  final componentFactory = await resolver.resolveComponent(appComponentType);
+  final componentRef = componentFactory.create(appInjector);
+  final cdMode = (componentRef.hostView as ViewRefImpl).appView.cdMode;
+  if (!isDefaultChangeDetectionStrategy(cdMode) &&
+      cdMode != ChangeDetectionStrategy.CheckAlways) {
+    throw new UnsupportedError(
+        'The root component in an Angular test or application must use the '
+        'default form of change detection (ChangeDetectionStrategy.Default). '
+        'Instead got ${(componentRef.hostView as ViewRefImpl).appView.cdMode} '
+        'on component $appComponentType.');
+  }
   if (beforeChangeDetection != null) {
     beforeChangeDetection(componentRef.instance);
   }
+  hostElement.append(componentRef.location.nativeElement);
   appRef.registerChangeDetector(componentRef.changeDetectorRef);
   componentRef.onDestroy(() {
     appRef.unregisterChangeDetector(componentRef.changeDetectorRef);

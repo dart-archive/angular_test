@@ -1,3 +1,13 @@
+## 1.0.0-beta+3
+
+- **BREAKING CHANGE**: Throws in bootstrapping if the root component does not
+  use default change detection. AngularDart does not support `OnPush` or other
+  change detection strategies on the root component.
+
+- Fixes a bug where the root was not removed from the DOM after disposed.
+
+- Added a missing dependency on `package:func`.
+
 ## 1.0.0-beta+2
 
 - Add support for setting a custom `PageLoader` factory:
