@@ -11,7 +11,7 @@ executables:
   angular_test:
 
 dependencies:
-  angular2: '>=3.0.0-alpha+1 <4.0.0'
+  angular2: '>=3.0.0-beta+1 <4.0.0'
   ansicolor: '^0.0.9'
   args: '^0.13.7'
   func: '>=0.1.1 <2.0.0'
