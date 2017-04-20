@@ -2,7 +2,7 @@ name: angular_test
 author: Dart Team <misc@dartlang.org>
 homepage: https://github.com/dart-lang/angular_test
 description: Testing infrastructure for AngularDart
-version: 1.0.0-beta+2
+version: 1.0.0-beta+3
 
 environment:
   sdk: '>=1.22.0 <2.0.0'
@@ -21,10 +21,6 @@ dependencies:
   path: '^1.4.1'
   stack_trace: ^1.7.0
   test: '^0.12.17'
-
-# Remove before publishing.
-dependency_overrides:
-  quiver:
 
 transformers:
   # Run the code generator on the entire package.

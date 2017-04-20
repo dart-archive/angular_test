@@ -8,6 +8,8 @@
 
 - Added a missing dependency on `package:func`.
 
+- Port used for `pub serve` is now configurable, and can be random.
+
 ## 1.0.0-beta+2
 
 - Add support for setting a custom `PageLoader` factory:
