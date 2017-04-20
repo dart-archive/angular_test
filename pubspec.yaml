@@ -19,6 +19,7 @@ dependencies:
   matcher: '^0.12.0+2'
   pageloader: '^2.2.5'
   path: '^1.4.1'
+  stack_trace: ^1.7.0
   test: '^0.12.17'
 
 # Remove before publishing.

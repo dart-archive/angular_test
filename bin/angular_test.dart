@@ -3,12 +3,13 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:angular_test/src/bin/logging.dart';
+import 'package:angular_test/src/util.dart';
 import 'package:args/args.dart';
 import 'package:path/path.dart' as p;
+import 'package:stack_trace/stack_trace.dart';
 
 final _pubBin = Platform.isWindows ? 'pub.bat' : 'pub';
 final RegExp _serveRegexp = new RegExp(r'^Serving\s+.*\s+on\s+(.*)$');
@@ -29,57 +30,76 @@ main(List<String> args) async {
     var logFile = new File(
         p.join(Directory.systemTemp.path, 'angular_test_pub_serve_output.log'));
     logFile.createSync();
-    log("The pub serve output is at ${logFile.uri}");
+    log("The pub serve output is at ${logFile.uri.toFilePath()}");
     initFileWriting(logFile.openWrite());
   }
-  var testsRunning = false;
-  // Run pub serve, and wait for significant messages.
-  final pubServeProcess = await Process
-      .start(_pubBin, ['serve', 'test', '--port=${parsedArgs['port']}']);
-  Uri serveUri;
-  var stdoutFuture =
-      pubServeProcess.stdout.map(UTF8.decode).listen((message) async {
-    if (serveUri == null) {
-      // need to find the origin on which pub serve is started
-      Match serveMatch = _serveRegexp.firstMatch(message);
-      if (serveMatch != null) {
-        serveUri = Uri.parse(serveMatch[1]);
-        log('pub serve started on: ${serveUri}');
+
+  Process pubServeProcess;
+
+  void killPub() {
+    if (pubServeProcess != null) {
+      log("Shutting down...");
+      if (!pubServeProcess.kill()) {
+        // Good FYI...
+        log('`pub serve` was not terminated.');
       }
+      pubServeProcess = null;
     }
-    if (message.contains('Serving angular_testing')) {
-      log('Using pub serve to generate AoT code for AngularDart...');
-    } else if (message.contains('Build completed successfully')) {
-      if (testsRunning) {
-        throw new StateError('Should only get this output once.');
-      }
+  }
+
+  await Chain.capture(() async {
+    var testsRunning = false;
+    // Run pub serve, and wait for significant messages.
+    pubServeProcess = await Process
+        .start(_pubBin, ['serve', 'test', '--port=${parsedArgs['port']}']);
+    Uri serveUri;
+    var stdoutFuture =
+        standardIoToLines(pubServeProcess.stdout).forEach((message) async {
       if (serveUri == null) {
-        throw new StateError('Could not determine serve host and port.');
+        // need to find the origin on which pub serve is started
+        Match serveMatch = _serveRegexp.firstMatch(message);
+        if (serveMatch != null) {
+          serveUri = Uri.parse(serveMatch[1]);
+          log('pub serve started on: ${serveUri}');
+        }
       }
-      success('Finished AoT compilation. Running tests...');
-      testsRunning = true;
-      exitCode = await _runTests(
-          includeFlags: parsedArgs['run-test-flag'],
-          includePlatforms: parsedArgs['platform'],
-          testNames: parsedArgs['name'],
-          testPlainNames: parsedArgs['plain-name'],
-          port: serveUri.port);
-      log('Shutting down...');
-      pubServeProcess.kill();
-    } else {
-      log(message, verbose: verbose);
-    }
-  }).asFuture();
-  var stderrFuture =
-      pubServeProcess.stderr.map(UTF8.decode).forEach((String message) {
-    error(message, verbose: verbose);
-  });
-  await Future.wait([
-    stdoutFuture,
-    stderrFuture,
-    pubServeProcess.exitCode
-  ]).whenComplete(() async {
-    await closeIOSink();
+      if (message.contains('Serving angular_testing')) {
+        log('Using pub serve to generate AoT code for AngularDart...');
+      } else if (message.contains('Build completed successfully')) {
+        if (testsRunning) {
+          throw new StateError('Should only get this output once.');
+        }
+        if (serveUri == null) {
+          throw new StateError('Could not determine serve host and port.');
+        }
+        success('Finished AoT compilation. Running tests...');
+        testsRunning = true;
+        exitCode = await _runTests(
+            includeFlags: parsedArgs['run-test-flag'],
+            includePlatforms: parsedArgs['platform'],
+            testNames: parsedArgs['name'],
+            testPlainNames: parsedArgs['plain-name'],
+            port: serveUri.port);
+        killPub();
+      } else {
+        log(message, verbose: verbose);
+      }
+    });
+    var stderrFuture =
+        standardIoToLines(pubServeProcess.stderr).forEach((String message) {
+      error(message, verbose: verbose);
+    });
+    await Future.wait([
+      stdoutFuture,
+      stderrFuture,
+      pubServeProcess.exitCode
+    ]).whenComplete(() async {
+      await closeIOSink();
+    });
+  }, onError: (e, chain) {
+    error([e, chain.terse].join('\n').trim(), exception: e, stack: chain);
+    killPub();
+    exitCode = 1;
   });
 }
 
@@ -100,8 +120,8 @@ Future<int> _runTests(
   args.add('--platform=${includePlatforms.map((p) => p.trim()).join(' ')}');
   final process = await Process.start(_pubBin, args);
   await Future.wait([
-    process.stderr.map(UTF8.decode).forEach(error),
-    process.stdout.map(UTF8.decode).forEach(log),
+    standardIoToLines(process.stderr).forEach(error),
+    standardIoToLines(process.stdout).forEach(log),
   ]);
 
   return await process.exitCode;
