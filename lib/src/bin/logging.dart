@@ -32,7 +32,7 @@ void success(String message, {bool verbose: true}) {
   }
 }
 
-void warn(String message, {exception, stack, bool verbose: true}) {
+void warn(String message, {Object exception, StackTrace stack, bool verbose: true}) {
   if (verbose) {
     _currentLogger.warning(_yellow(message), exception, stack);
   } else {
@@ -40,7 +40,7 @@ void warn(String message, {exception, stack, bool verbose: true}) {
   }
 }
 
-void error(String message, {exception, stack, bool verbose: true}) {
+void error(String message, {Object  exception, StackTrace stack, bool verbose: true}) {
   if (verbose) {
     _currentLogger.severe(_red(message), exception, stack);
   } else {
