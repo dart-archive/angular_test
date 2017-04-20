@@ -29,7 +29,7 @@ main(List<String> args) async {
     var logFile = new File(
         p.join(Directory.systemTemp.path, 'angular_test_pub_serve_output.log'));
     logFile.createSync();
-    log("The pub serve output is at ${logFile.uri}");
+    log("The pub serve output is at ${logFile.uri.toFilePath()}");
     initFileWriting(logFile.openWrite());
   }
   var testsRunning = false;
