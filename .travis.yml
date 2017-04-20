@@ -3,9 +3,13 @@ sudo: false
 dart:
   - stable
   - dev
-  - 1.22.0
-with_content_shell: true
+  - 1.22.1
+dart_task:
+  - test: -p vm -x aot
+    xvfb: false
+  - dartfmt
+  # Let's be super aggressive, since it's 100% at the moment
+  - dartanalyzer: . --fatal-hints --fatal-warnings --fatal-lints
 cache:
   directories:
     - $HOME/.pub-cache
-script: ./tool/presubmit.sh
