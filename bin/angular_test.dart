@@ -14,6 +14,9 @@ import 'package:stack_trace/stack_trace.dart';
 final _pubBin = Platform.isWindows ? 'pub.bat' : 'pub';
 final RegExp _serveRegexp = new RegExp(r'^Serving\s+.*\s+on\s+(.*)$');
 
+Stream<String> _standardIoToLines(Stream<List<int>> source) =>
+    source.transform(SYSTEM_ENCODING.decoder).transform(const LineSplitter());
+
 /// Runs all tests using `pub run test` in the specified directory.
 ///
 /// Tests that require AoT code generation proxies through `pub serve`.
@@ -54,7 +57,7 @@ main(List<String> args) async {
         .start(_pubBin, ['serve', 'test', '--port=${parsedArgs['port']}']);
     Uri serveUri;
     var stdoutFuture =
-        pubServeProcess.stdout.map(UTF8.decode).listen((message) async {
+        _standardIoToLines(pubServeProcess.stdout).forEach((message) async {
       if (serveUri == null) {
         // need to find the origin on which pub serve is started
         Match serveMatch = _serveRegexp.firstMatch(message);
@@ -84,9 +87,9 @@ main(List<String> args) async {
       } else {
         log(message, verbose: verbose);
       }
-    }).asFuture();
+    });
     var stderrFuture =
-        pubServeProcess.stderr.map(UTF8.decode).forEach((String message) {
+        _standardIoToLines(pubServeProcess.stderr).forEach((String message) {
       error(message, verbose: verbose);
     });
     await Future.wait([
@@ -120,8 +123,8 @@ Future<int> _runTests(
   args.add('--platform=${includePlatforms.map((p) => p.trim()).join(' ')}');
   final process = await Process.start(_pubBin, args);
   await Future.wait([
-    process.stderr.map(UTF8.decode).forEach(error),
-    process.stdout.map(UTF8.decode).forEach(log),
+    _standardIoToLines(process.stderr).forEach(error),
+    _standardIoToLines(process.stdout).forEach(log),
   ]);
 
   return await process.exitCode;
