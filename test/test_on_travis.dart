@@ -21,6 +21,7 @@ main() {
   var args = [
     'run',
     'angular_test',
+    // Use a specific port to avoid grabbing a bad one.
     '--serve-arg=--port=8080',
     '--test-arg=--tags=aot',
     '--test-arg=--platform=dartium',
