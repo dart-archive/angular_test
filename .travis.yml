@@ -5,7 +5,7 @@ dart:
   - dev
 
 dart_task:
-  - test: -p vm -x aot
+  - test: -p vm -x aot --timeout 4x
     xvfb: false
   - test: test/test_on_travis.dart
     install_dartium: true
