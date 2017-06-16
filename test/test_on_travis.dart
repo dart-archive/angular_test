@@ -23,6 +23,7 @@ main() {
     'angular_test',
     // Use a specific port to avoid grabbing a bad one.
     '--serve-arg=--port=8080',
+    '--test-arg=--timeout=4x',
     '--test-arg=--tags=aot',
     '--test-arg=--platform=dartium',
   ];
