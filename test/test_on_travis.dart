@@ -21,6 +21,7 @@ main() {
   var args = [
     'run',
     'angular_test',
+    '--serve-arg=--port=8080',
     '--test-arg=--tags=aot',
     '--test-arg=--platform=dartium',
   ];
