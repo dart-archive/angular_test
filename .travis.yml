@@ -3,7 +3,7 @@ sudo: false
 dart:
   - stable
   - dev
-  - 1.22.1
+
 dart_task:
   - test: -p vm -x aot
     xvfb: false
@@ -12,6 +12,14 @@ dart_task:
   - dartfmt
   # Let's be super aggressive, since it's 100% at the moment
   - dartanalyzer: . --fatal-hints --fatal-warnings --fatal-lints
+
+matrix:
+  allow_failures:
+    - dart: dev
+
 cache:
   directories:
     - $HOME/.pub-cache
+
+branches:
+  only: [master]

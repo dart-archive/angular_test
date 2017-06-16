@@ -2,3 +2,4 @@
 tags:
   aot:
     platform: browser
+    timeout: 4x
