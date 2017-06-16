@@ -18,7 +18,12 @@ import 'package:test/test.dart';
 
 main() {
   var exec = 'pub';
-  var args = ['run', 'angular_test', '-p', 'dartium'];
+  var args = [
+    'run',
+    'angular_test',
+    '--test-arg=--tags=aot',
+    '--test-arg=--platform=dartium',
+  ];
   var name = ([exec]..addAll(args)).join(' ');
 
   test(name, () async {
