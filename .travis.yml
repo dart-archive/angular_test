@@ -7,7 +7,7 @@ dart:
 dart_task:
   - test: -p vm -x aot
     xvfb: false
-  - test: test/test_on_travis.dart
+  - test: test/test_on_travis.dart --timeout=4x
     install_dartium: true
   - dartfmt
   # Let's be super aggressive, since it's 100% at the moment
