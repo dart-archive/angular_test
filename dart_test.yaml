@@ -2,6 +2,4 @@
 tags:
   aot:
     platform: browser
-  browser:
-    timeout: 2x
-    presets: {travis: {timeout: 4x}}
+    timeout: 4x
