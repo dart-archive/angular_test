@@ -78,6 +78,10 @@ class CliOptions {
 
   factory CliOptions.fromArgs(List<String> args) {
     final results = _argParser.parse(args);
+    if (results.wasParsed('help')) {
+      log(_argParser.usage);
+      exit(1);
+    }
     const [
       'run-test-flag',
       'platform',
@@ -115,7 +119,6 @@ final _argParser = new ArgParser()
   ..addOption(
     'package',
     help: 'What directory containing a pub package to run tests in',
-    valueHelp: p.join('some', 'path', 'to', 'package'),
     defaultsTo: p.current,
   )
   ..addFlag(
@@ -123,6 +126,11 @@ final _argParser = new ArgParser()
     abbr: 'v',
     help: 'Whether to display output of "pub serve" while running tests',
     defaultsTo: false,
+  )
+  ..addFlag(
+    'help',
+    help: 'Show usage',
+    negatable: false,
   )
 
   // Translated into `pub serve` arguments.
@@ -133,13 +141,13 @@ final _argParser = new ArgParser()
         '**DEPRECATED**: Use --serve-arg=--port=.... If this is\n'
         'not specified, and --serve-arg=--port is not specified, then\n'
         'defaults to a value of "0" (or random port).',
-    valueHelp: 'Using port `0` means a random port',
   )
   ..addOption(
     'serve-arg',
     abbr: 'S',
-    help: 'Pass an additional argument=value to `pub serve`',
-    valueHelp: '--pub-serve-arg=--mode=release',
+    help: ''
+        'Pass an additional argument=value to `pub serve`\n\n'
+        'Example use --serve-arg=--mode=release',
     allowMultiple: true,
   )
 
@@ -161,7 +169,6 @@ final _argParser = new ArgParser()
     help: ''
         'What platform(s) to pass to `pub run test`.\n\n'
         '**DEPRECATED**: Use --test-arg=--platform=... instead',
-    valueHelp: 'Common examples are "content-shell", "dartium", "chrome"',
     allowMultiple: true,
   )
   ..addOption(
@@ -188,7 +195,8 @@ final _argParser = new ArgParser()
   ..addOption(
     'test-arg',
     abbr: 'T',
-    help: 'Pass an additional argument=value to `pub serve`',
-    valueHelp: '--pub-serve-arg=--mode=release',
+    help: ''
+        'Pass an additional argument=value to `pub run test`\n\n'
+        'Example: --test-arg=--name=ngIf',
     allowMultiple: true,
   );
