@@ -5,7 +5,7 @@
 import 'dart:async';
 import 'dart:html';
 
-import 'package:angular2/angular2.dart';
+import 'package:angular/angular.dart';
 import 'package:angular_test/src/bootstrap.dart';
 import 'package:angular_test/src/errors.dart';
 import 'package:angular_test/src/frontend/fixture.dart';

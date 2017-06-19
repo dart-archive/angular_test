@@ -5,12 +5,11 @@
 import 'dart:async';
 import 'dart:html';
 
-import 'package:angular2/src/core/application_ref.dart';
-import 'package:angular2/src/core/change_detection/constants.dart';
-import 'package:angular2/src/core/linker/app_view_utils.dart';
-import 'package:angular2/angular2.dart';
-import 'package:angular2/platform/browser_static.dart';
-import 'package:angular2/src/core/linker/view_ref.dart';
+import 'package:angular/angular.dart';
+import 'package:angular/src/core/application_ref.dart';
+import 'package:angular/src/core/change_detection/constants.dart';
+import 'package:angular/src/core/linker/app_view_utils.dart';
+import 'package:angular/src/core/linker/view_ref.dart';
 
 /// Returns a future that completes with a new instantiated component.
 ///
