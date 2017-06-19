@@ -4,7 +4,7 @@
 
 import 'dart:async';
 
-import 'package:angular2/di.dart';
+import 'package:angular/di.dart';
 import 'package:angular_test/src/errors.dart';
 
 /// Abstraction around services that change the state of the DOM asynchronously.

@@ -11,7 +11,7 @@ executables:
   angular_test:
 
 dependencies:
-  angular2: '>=3.0.0-alpha+1 <4.0.0'
+  angular: '4.0.0-dev'
   ansicolor: '^0.0.9'
   args: '>=0.13.7 <2.0.0'
   collection: '^1.14.0'
@@ -23,14 +23,13 @@ dependencies:
   path: '^1.4.1'
   stack_trace: ^1.7.0
   test: '^0.12.17'
-
 transformers:
   # Run the code generator on the entire package.
-  - angular2/transform/codegen
+  - angular/transform/codegen
 
   # Run the reflection remover just on tests that have AoT enabled.
   # TODO: Automate this, either via script or a naming convention.
-  - angular2/transform/reflection_remover:
+  - angular/transform/reflection_remover:
       $include:
           - test/frontend/bed_error_test.dart
           - test/frontend/bed_lifecycle_test.dart

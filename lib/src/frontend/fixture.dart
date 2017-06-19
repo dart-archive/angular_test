@@ -5,10 +5,10 @@
 import 'dart:async';
 import 'dart:html';
 
-import 'package:angular2/angular2.dart';
-import 'package:angular2/src/core/linker/view_ref.dart';
-import 'package:angular2/src/debug/debug_app_view.dart';
-import 'package:angular2/src/debug/debug_node.dart';
+import 'package:angular/angular.dart';
+import 'package:angular/src/core/linker/view_ref.dart';
+import 'package:angular/src/debug/debug_app_view.dart';
+import 'package:angular/src/debug/debug_node.dart';
 import 'package:angular_test/src/frontend/bed.dart';
 import 'package:angular_test/src/frontend/stabilizer.dart';
 import 'package:func/func.dart';
